@@ -36,9 +36,9 @@ $(DBG)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(BCFLAGS) -c $< -o $@
 
-.PHONY: all debug clean
+.PHONY: gibi debug clean
 
-all: $(BTG)
+gibi: $(BTG)
 
 debug: $(DTG)
 
