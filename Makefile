@@ -2,34 +2,48 @@
 
 SRC ?= "./src"
 BLD ?= "./build"
-TGT ?= "$(BLD)/gibi"
+DBG ?= "./debug"
+BTG ?= "$(BLD)/gibi"
+DTG ?= "$(DBG)/gibi"
 
-CC  ?= "gcc"
+CC ?= "gcc"
 
-CFLAGS   ?= 
-CPPFLAGS ?=
-LDFLAGS  ?=
+BCFLAGS   ?=
+BLDFLAGS  ?=
+DCFLAGS  ?= -g
+DLDFLAGS ?=
 
 SOURCE := $(shell find $(SRC) -name "*.c")
-OBJECT := $(SOURCE:%=$(BLD)/%.o)
-DEPEND := $(OBJECT:.o=.d)
+BLDOBJ := $(SOURCE:%=$(BLD)/%.o)
+BLDDEP := $(BLDOBJ:.o=.d)
+DBGOBJ := $(SOURCE:%=$(DBG)/%.o)
+DBGDEP := $(DBGOBJ:.o=.d)
 
 DEP_INCL := $(addprefix -I,$(shell find $(SRC) -type d))
 CPPFLAGS += $(DEP_INCL) "-MMD" "-MP"
 
-$(TGT): $(OBJECT)
-	$(CC) $(OBJECT) -o $@ $(LDFLAGS)
+$(BTG): $(BLDOBJ)
+	$(CC) $(BLDOBJ) -o $@ $(LDFLAGS)
 
 $(BLD)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(DCFLAGS) -c $< -o $@
 
-.PHONY: all clean
+$(DTG): $(DBGOBJ)
+	$(CC) $(DBGOBJ) -o $@ $(DLDFLAGS)
 
-all: $(TGT)
+$(DBG)/%.c.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) $(BCFLAGS) -c $< -o $@
+
+.PHONY: all debug clean
+
+all: $(BTG)
+
+debug: $(DTG)
 
 clean:
-	$(RM) -r $(BLD)
+	$(RM) -r $(BLD) $(DBG)
 
 -include $(DEPEND)
 
