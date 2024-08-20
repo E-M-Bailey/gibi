@@ -1,5 +1,7 @@
 # Based on https://spin.atomicobject.com/makefile-c-projects/
 
+.DEFAULT_GOAL := all
+
 SRC ?= "./src"
 BLD ?= "./build"
 DBG ?= "./debug"
@@ -8,8 +10,10 @@ DTG ?= "$(DBG)/gibi"
 
 CC ?= "gcc"
 
-BCFLAGS   ?=
-BLDFLAGS  ?=
+CFLAGS   ?= -O2
+LDFLAGS  ?=
+BCFLAGS  ?=
+BLDFLAGS ?=
 DCFLAGS  ?= -g
 DLDFLAGS ?=
 
@@ -23,20 +27,22 @@ DEP_INCL := $(addprefix -I,$(shell find $(SRC) -type d))
 CPPFLAGS += $(DEP_INCL) "-MMD" "-MP"
 
 $(BTG): $(BLDOBJ)
-	$(CC) $(BLDOBJ) -o $@ $(LDFLAGS)
+	$(CC) $(BLDOBJ) -o $@ $(LDFLAGS) $(BLDFLAGS)
 
 $(BLD)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(DCFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(DCFLAGS) -c $< -o $@
 
 $(DTG): $(DBGOBJ)
-	$(CC) $(DBGOBJ) -o $@ $(DLDFLAGS)
+	$(CC) $(DBGOBJ) -o $@ $(LDFLAGS) $(DLDFLAGS)
 
 $(DBG)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(BCFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(BCFLAGS) -c $< -o $@
 
-.PHONY: gibi debug clean
+.PHONY: all gibi debug clean
+
+all: gibi debug
 
 gibi: $(BTG)
 
@@ -46,5 +52,4 @@ clean:
 	$(RM) -r $(BLD) $(DBG)
 
 -include $(DEPEND)
-
 
