@@ -8,9 +8,9 @@
 
 // settings.c doesn't have to re-declare these settings without extern but no ODR violations occur.
 #ifdef GIBI_SETTINGS_NO_EXTERN
-#define EXTERN
+#define DECL_SETTING(decl, def) decl def;
 #else
-#define EXTERN extern
+#define DECL_SETTING(decl, def) extern decl;
 #endif
 
 // TODO add persistence
@@ -19,7 +19,7 @@
 
 // Miscellaneous display settings
 // Gap between tab stops. Must always be positive.
-EXTERN size_t tab_width = 8;
+DECL_SETTING(size_t tab_width, = 8);
 
 #endif
 
